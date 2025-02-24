@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=75.8.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "student-performance-analysis"  # Replace it with your project name
+version = "0.0.1"                     # Add the version field
+
+#[tool.setuptools.editable]
+#mode = "compat"
