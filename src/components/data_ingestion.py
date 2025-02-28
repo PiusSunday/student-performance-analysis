@@ -47,7 +47,7 @@ class DataIngestion:
                 self.ingestion_config.test_data_path, index=False, header=True
             )
 
-            logging.info("Inmgestion of the data iss completed")
+            logging.info("Ingestion of the data is completed")
 
             return (
                 self.ingestion_config.train_data_path,
@@ -66,5 +66,5 @@ if __name__ == "__main__":
         train_data, test_data
     )
 
-    modeltrainer = ModelTrainer()
-    print(modeltrainer.initiate_model_trainer(train_arr, test_arr))
+    model_trainer = ModelTrainer()
+    print(model_trainer.initiate_model_trainer(train_arr, test_arr))
