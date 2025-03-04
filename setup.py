@@ -23,7 +23,7 @@ def get_requirements(file_path: str) -> List[str]:
 
 setup(
     name="student-performance-analysis",
-    version="0.0.1",
+    version="0.0.2",
     author="Sunnythesage",
     author_email="Sundaypius2000gmail.com",
     packages=find_packages(),
