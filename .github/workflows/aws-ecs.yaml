@@ -106,52 +106,52 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-  continuous-deployment:
-    name: Continuous Deployment
-    runs-on: self-hosted
-    needs: build-and-push-ecr-image
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      #      - name: Fill in the new image ID in the Amazon ECS task definition
-      #        id: task-def
-      #        uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #        with:
-      #          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-      #          container-name: ${{ env.CONTAINER_NAME }}
-      #          image: ${{ steps.build-image.outputs.image }}
-      #
-      #      - name: Deploy Amazon ECS task definition
-      #        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #        with:
-      #          task-definition: ${{ steps.task-def.outputs.task-definition }}
-      #          service: ${{ env.ECS_SERVICE }}
-      #          cluster: ${{ env.ECS_CLUSTER }}
-      #          wait-for-service-stability: true
-
-      - name: Pull latest images
-        run: |
-          docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-
-      - name: Stop and remove container if running
-        run: |
-          docker ps -q --filter "name=student-app" | grep -q . && docker stop student-app && docker rm -fv student-app
-
-      - name: Run Docker Image to serve users
-        run: |
-          docker run -d -p 8080:8080 --ipc="host" --name=student-app -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-      - name: Clean previous images and containers
-        run: |
-          docker system prune -f
+#  continuous-deployment:
+#    name: Continuous Deployment
+#    runs-on: self-hosted
+#    needs: build-and-push-ecr-image
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ env.AWS_REGION }}
+#
+#      - name: Login to Amazon ECR
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@v1
+#
+#      #      - name: Fill in the new image ID in the Amazon ECS task definition
+#      #        id: task-def
+#      #        uses: aws-actions/amazon-ecs-render-task-definition@v1
+#      #        with:
+#      #          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+#      #          container-name: ${{ env.CONTAINER_NAME }}
+#      #          image: ${{ steps.build-image.outputs.image }}
+#      #
+#      #      - name: Deploy Amazon ECS task definition
+#      #        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#      #        with:
+#      #          task-definition: ${{ steps.task-def.outputs.task-definition }}
+#      #          service: ${{ env.ECS_SERVICE }}
+#      #          cluster: ${{ env.ECS_CLUSTER }}
+#      #          wait-for-service-stability: true
+#
+#      - name: Pull latest images
+#        run: |
+#          docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+#
+#      - name: Stop and remove container if running
+#        run: |
+#          docker ps -q --filter "name=student-app" | grep -q . && docker stop student-app && docker rm -fv student-app
+#
+#      - name: Run Docker Image to serve users
+#        run: |
+#          docker run -d -p 8080:8080 --ipc="host" --name=student-app -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+#      - name: Clean previous images and containers
+#        run: |
+#          docker system prune -f
