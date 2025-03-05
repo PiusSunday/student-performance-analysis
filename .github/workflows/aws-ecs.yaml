@@ -141,11 +141,11 @@ jobs:
       #          cluster: ${{ env.ECS_CLUSTER }}
       #          wait-for-service-stability: true
 
-      #      - name: Pull latest images
-      #        run: |
-      #          docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+      - name: Pull latest images
+        run: |
+          docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      - name: Stop and remove  container if running
+      - name: Stop and remove container if running
         run: |
           docker ps -q --filter "name=student-app" | grep -q . && docker stop student-app && docker rm -fv student-app
 
