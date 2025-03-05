@@ -33,14 +33,14 @@ on:
       - 'README.md'
 
 env:
-  AWS_REGION: MY_AWS_REGION                   # set this to your preferred AWS region, e.g., us-west-1
-  ECR_REPOSITORY: MY_ECR_REPOSITORY           # set this to your Amazon ECR repository name
-  ECS_SERVICE: MY_ECS_SERVICE                 # set this to your Amazon ECS service name
-  ECS_CLUSTER: MY_ECS_CLUSTER                 # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
-  # file, e.g.,.aws/task-definition.json
-  CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
+  AWS_REGION: eu-north-1                   # set this to your preferred AWS region, e.g., us-west-1
+  ECR_REPOSITORY: student-performance-analysis-repository           # set this to your Amazon ECR repository name
+#  ECS_SERVICE: MY_ECS_SERVICE                 # set this to your Amazon ECS service name
+#  ECS_CLUSTER: MY_ECS_CLUSTER                 # set this to your Amazon ECS cluster name
+#  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
+#  # file, e.g.,.aws/task-definition.json
+#  CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
+#  # containerDefinitions section of your task definition
 
 permissions:
   contents: read
@@ -94,7 +94,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: "latest: ${{ github.sha }}"
         run: |
           # Build a docker container and
           # push it to ECR so that it can
@@ -123,21 +123,21 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+      #      - name: Fill in the new image ID in the Amazon ECS task definition
+      #        id: task-def
+      #        uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #        with:
+      #          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+      #          container-name: ${{ env.CONTAINER_NAME }}
+      #          image: ${{ steps.build-image.outputs.image }}
+      #
+      #      - name: Deploy Amazon ECS task definition
+      #        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      #        with:
+      #          task-definition: ${{ steps.task-def.outputs.task-definition }}
+      #          service: ${{ env.ECS_SERVICE }}
+      #          cluster: ${{ env.ECS_CLUSTER }}
+      #          wait-for-service-stability: true
 
       - name: Pull latest images
         run: |
@@ -145,11 +145,11 @@ jobs:
 
       # - name: Stop and remove  container if running
       #   run: |
-      #    docker ps -q --filter "name=mltest" | grep -q . && docker stop mltest && docker rm -fv mltest
+      #    docker ps -q --filter "name=student-app" | grep -q . && docker stop mltest && docker rm -fv student-app
 
       - name: Run Docker Image to serve users
         run: |
-          docker run -d -p 8080:8080 --ipc="host" --name=mltest -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          docker run -d -p 8080:8080 --ipc="host" --name=student-app -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
       - name: Clean previous images and containers
         run: |
           docker system prune -f
