@@ -38,7 +38,7 @@ class DataIngestion:
         try:
             # Read the dataset from the specified path into a pandas DataFrame
             df = pd.read_csv(
-                "/Users/sunnythesage/PythonProjects/Data-Science-BootCamp/Datasets/student-performance-data.csv"
+                "/Users/sunnythesage/Developer/Python/Data-Science-BootCamp/Datasets/student-performance-data.csv"
             )
             logging.info("Read the dataset as dataframe")
 
